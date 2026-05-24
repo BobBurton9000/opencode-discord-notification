@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import type { Plugin } from "@opencode-ai/plugin";
 
 interface DiscordWebhookConfig {
@@ -15,7 +18,7 @@ export const DiscordNotificationPlugin: Plugin = async ({ client, project }) => 
         await handleNotification(client, project, event, "idle");
       }
       // 2. Handle Permission Request (Orange)
-      else if (event.type === "permission.asked") {
+      else if ((event.type as string) === "permission.asked") {
         await handleNotification(client, project, event, "permission");
       }
     },
@@ -31,10 +34,9 @@ async function handleNotification(client: any, project: any, event: any, type: "
 
     if (!config.webhookUrl) {
       try {
-        const configPath = "/var/home/frieser/.config/opencode/discord-notification-config.json";
-        const configFile = Bun.file(configPath);
-        if (await configFile.exists()) {
-          config = await configFile.json();
+        const configPath = join(homedir(), ".config", "opencode", "discord-notification-config.json");
+        if (existsSync(configPath)) {
+          config = JSON.parse(readFileSync(configPath, "utf-8"));
         }
       } catch (e) {}
     }
