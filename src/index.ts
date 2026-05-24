@@ -57,6 +57,9 @@ async function handleNotification(client: any, project: any, event: any, type: "
     ]);
     
     const session = (sRes as any).data || sRes;
+
+    if (session?.parentID) return;
+
     const messages = (mRes as any).data || mRes || [];
 
     let lastText = "Response completed.";
