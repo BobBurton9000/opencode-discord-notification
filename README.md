@@ -17,7 +17,7 @@ Add it to your `opencode.json`:
 
 ```json
 {
-  "plugin": ["bobs-opencode-discord-notifier@latest"]
+  "plugin": ["bobs-opencode-discord-notifier@0.1.6"]
 }
 ```
 
