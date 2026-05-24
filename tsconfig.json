@@ -25,6 +25,9 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Suppress TS 5.1 baseUrl deprecation
+    "ignoreDeprecations": "6.0"
   }
 }
