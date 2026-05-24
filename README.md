@@ -17,7 +17,7 @@ Add it to your `opencode.json`:
 
 ```json
 {
-  "plugin": ["opencode-discord-notification@0.1.1"]
+  "plugin": ["bobs-opencode-discord-notifier@latest"]
 }
 ```
 
@@ -37,8 +37,8 @@ Create a configuration file at `~/.config/opencode/discord-notification-config.j
 ## Development
 
 1. Clone the repo.
-2. Install dependencies: `bun install`.
-3. Type-check: `bun x tsc`.
+2. Install dependencies: `npm install`.
+3. Build and type-check: `npm run build && npx tsc`.
 
 ## License
 
