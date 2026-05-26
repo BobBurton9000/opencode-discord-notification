@@ -25,6 +25,14 @@ export const DiscordNotificationPlugin: Plugin = async ({ client, project }) => 
   };
 };
 
+function formatDuration(ms: number): string {
+  const minutes = Math.floor(ms / 60_000);
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours > 0) return `${hours}h ${remainingMinutes}m`;
+  return `${minutes}m`;
+}
+
 async function handleNotification(client: any, project: any, event: any, type: "idle" | "permission") {
   try {
     // 1. GET CONFIGURATION
@@ -60,11 +68,15 @@ async function handleNotification(client: any, project: any, event: any, type: "
 
     if (session?.parentID) return;
 
+    if (type === "idle" && session?.time?.created) {
+      if (Date.now() - session.time.created < 300_000) return;
+    }
+
     const messages = (mRes as any).data || mRes || [];
 
     let lastText = "Response completed.";
     let contextUsage = "N/A";
-    let modelName = session?.model?.name || "Unknown";
+    let modelName = session?.model?.name || session?.model?.id || "Unknown";
     let totalTokensAccumulated = 0;
     let pendingCommand = "";
 
@@ -95,8 +107,6 @@ async function handleNotification(client: any, project: any, event: any, type: "
     const assistantMessages = messages.filter((m: any) => (m.info?.role || m.role) === "assistant");
     const lastAssistant = assistantMessages[assistantMessages.length - 1];
     if (lastAssistant) {
-      const text = lastAssistant.parts?.filter((p: any) => p.type === "text").map((p: any) => p.text).join("\n");
-      if (text) lastText = text;
       modelName = (lastAssistant.info?.modelID || lastAssistant.modelID) || modelName;
     }
 
@@ -131,7 +141,7 @@ async function handleNotification(client: any, project: any, event: any, type: "
           description: description.length > 1500 ? description.substring(0, 1497) + "..." : description,
           color,
           fields,
-          footer: { text: `Session ID: ${sessionId}` },
+          footer: { text: `Session ID: ${sessionId}${session?.time?.created ? ` • Duration: ${formatDuration(Date.now() - session.time.created)}` : ""}` },
           timestamp: new Date().toISOString()
         }]
       }),

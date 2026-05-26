@@ -1,6 +1,6 @@
 {
   "name": "bobs-opencode-discord-notifier",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "OpenCode plugin that sends Discord notifications on session completion and permission requests.",
   "type": "module",
   "main": "./dist/index.js",

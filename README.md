@@ -1,29 +1,44 @@
 # opencode-discord-notification
 
-OpenCode plugin that sends Discord notifications on session completion and permission requests.
-
-![Example Notification](screenshots/example.png)
+OpenCode plugin that sends Discord webhook notifications on session completion and permission requests.
 
 ## Features
 
-- ✅ **Completion Notifications:** Get a Discord message when OpenCode finishes a long task.
-- 📊 **Context Stats:** Includes context usage percentage and total tokens.
-- 🤖 **Model Info:** Shows which model was used for the response.
-- ⚠️ **Permission Alerts:** Real-time notifications when OpenCode is blocked waiting for terminal permissions, including the command it's trying to run.
+- ✅ **Completion Notifications** — Green embed when a session goes idle (minimum 5 min).
+- ⚠️ **Permission Alerts** — Orange embed when OpenCode is blocked waiting for approval, including the blocked command.
+- 🔒 **Privacy-First** — Assistant response content is never sent to Discord; only metadata.
+- 📊 **Context Stats** — Context window usage % and total token count.
+- 🤖 **Model Info** — Which model was used.
+- ⏱️ **Session Duration** — How long the session ran, shown in the embed footer.
+- 🚫 **Sub-Session Filtering** — Child sessions (with a `parentID`) are ignored.
 
 ## Installation
 
-Add it to your `opencode.json`:
-
 ```json
-{
-  "plugin": ["bobs-opencode-discord-notifier@0.1.6"]
-}
+{ "plugin": ["bobs-opencode-discord-notifier@0.1.7"] }
 ```
 
 ## Configuration
 
-Create a configuration file at `~/.config/opencode/discord-notification-config.json`:
+Two sources, checked in priority order:
+
+### 1. In `opencode.json` (preferred)
+
+```json
+{
+  "plugin": ["bobs-opencode-discord-notifier@0.1.7"],
+  "discordNotifications": {
+    "enabled": true,
+    "webhookUrl": "https://discord.com/api/webhooks/...",
+    "username": "OpenCode Notifier",
+    "avatarUrl": "https://opencode.ai/logo.png"
+  }
+}
+```
+
+### 2. Config file fallback
+
+`~/.config/opencode/discord-notification-config.json`:
 
 ```json
 {
@@ -34,11 +49,30 @@ Create a configuration file at `~/.config/opencode/discord-notification-config.j
 }
 ```
 
+| Field | Required | Default |
+|---|---|---|
+| `webhookUrl` | Yes | — |
+| `enabled` | Yes | — |
+| `username` | No | `OpenCode Notifier` |
+| `avatarUrl` | No | None |
+
+## Behavior
+
+| Event | Embed Color | Min Duration |
+|---|---|---|
+| `session.idle` | Green | 5 minutes |
+| `permission.asked` | Orange | None (immediate) |
+
+Idle notifications are only sent for sessions that ran at least 5 minutes. Sub-sessions spawned by tools are always skipped.
+
+Each embed includes: title, context usage %, total tokens, model name, session ID, and duration.
+
 ## Development
 
-1. Clone the repo.
-2. Install dependencies: `npm install`.
-3. Build and type-check: `npm run build && npx tsc`.
+```bash
+npm install
+npm run build && npx tsc
+```
 
 ## License
 
